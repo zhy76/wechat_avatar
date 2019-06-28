@@ -12,7 +12,7 @@ def run():
     """ 主程序入口"""
     wechat_avatar.run()
     # avatar_mosaic.run("template.jpg", "wechat_mosaic.jpg")
-    avatar_mosaic.run(os.getcwd() + "\\wechat\\" + "0.jpg", "wechat_mosaic.jpg")
+    avatar_mosaic.run(os.getcwd() + "\\wechat\\" + "0.jpg", "wechat_mosaic.jpg", is_big_size=True)
 
 
 if __name__ == '__main__':

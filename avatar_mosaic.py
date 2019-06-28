@@ -55,9 +55,12 @@ class MosaicMaker(object):
         self.__default_h = default_h
         self.__all_img = dict()
 
+
     # 对外提供的接口
-    def make(self):
+    def make(self, is_big_size=False):
         aim_im = Image.open(self.__aim_path)
+        if is_big_size:
+            aim_im = aim_im.resize((2048, 2048), Image.ANTIALIAS)
         aim_width = aim_im.size[0]
         aim_height = aim_im.size[1]
         print("计算子图尺寸")
@@ -117,7 +120,9 @@ class MosaicMaker(object):
     # 计算子图大小
     def __divide_sub_im(self, width, height):
         flag = True
+        # 默认因子320
         g = self.__gcd(width, height)
+        print()
         if g < 20:
             flag = False
             width = self.__default_w
@@ -125,6 +130,7 @@ class MosaicMaker(object):
             g = 320
 
         if g == width:
+            # g = int(g / 2)
             g = 320
 
         width_g = width // g
@@ -133,6 +139,13 @@ class MosaicMaker(object):
 
         self.__sub_width = self.__min_unit * (width_g)
         self.__sub_height = self.__min_unit * (height // g)
+
+        #预防为0
+        if self.__sub_width < 1 or self.__sub_height < 1:
+            print("子图无法小于1像素，生成失败!")
+            import sys
+            sys.exit()
+
         return flag
 
     # 读取全部图片,按(灰度值,平均RGB，hash值)保存 fin_w,fin_h素材最终尺寸
@@ -282,11 +295,12 @@ class MosaicMaker(object):
         return self.__all_img
 
 
-def run(aim_path, out_path):
+
+def run(aim_path, out_path, is_big_size):
     db_path = os.getcwd() + "\\wechat\\"
     m = MosaicMaker(db_path, aim_path,
                     out_path)
-    m.make()
+    m.make(is_big_size)
     return
 
 if __name__ == '__main__':
@@ -295,5 +309,5 @@ if __name__ == '__main__':
     out_path = "wechat_mosaic.jpg"
     m = MosaicMaker(db_path, aim_path,
                     out_path)
-    m.make()
+    m.make(is_big_size=False)
     pass

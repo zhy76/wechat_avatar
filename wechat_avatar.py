@@ -56,6 +56,14 @@ def joint_avatar(path):
     img = image.save(os.getcwd() + "/wechat.png")
     print('微信好友头像拼接完成!')
 
+def del_dir(dir_path):
+    """
+    删除文件夹及内容
+    :param dir_path:
+    :return:
+    """
+    import shutil
+    shutil.rmtree(dir_path)
 
 def run():
     avatar_dir = creat_filepath()
@@ -64,6 +72,7 @@ def run():
     return
 
 if __name__ == '__main__':
+    del_dir(os.getcwd() + "\\wechat\\")
     avatar_dir = creat_filepath()
     save_avatar(avatar_dir)
     joint_avatar(avatar_dir)
