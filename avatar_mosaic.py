@@ -60,7 +60,9 @@ class MosaicMaker(object):
     def make(self, is_big_size=False):
         aim_im = Image.open(self.__aim_path)
         if is_big_size:
-            aim_im = aim_im.resize((2048, 2048), Image.ANTIALIAS)
+            big_width = 4096
+            big_heigth = int(4096 / aim_im.size[0] * aim_im.size[1])
+            aim_im = aim_im.resize((big_width, big_heigth), Image.ANTIALIAS)
         aim_width = aim_im.size[0]
         aim_height = aim_im.size[1]
         print("计算子图尺寸")
@@ -120,7 +122,7 @@ class MosaicMaker(object):
     # 计算子图大小
     def __divide_sub_im(self, width, height):
         flag = True
-        # 默认因子320
+
         g = self.__gcd(width, height)
         print()
         if g < 20:
@@ -129,9 +131,16 @@ class MosaicMaker(object):
             height = self.__default_h
             g = 320
 
-        if g == width:
-            # g = int(g / 2)
-            g = 320
+        elif g == width and g >= 320:
+            # 6.4倍数效果最好
+            g = int(g / (2048 / 320))
+            # g = 320
+
+        # 兼容小图片
+        elif g < 320:
+            g = int(g / 2)
+
+        print("g", g)
 
         width_g = width // g
         if width_g < 1:
