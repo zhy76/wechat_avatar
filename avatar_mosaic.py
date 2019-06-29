@@ -42,8 +42,8 @@ class MosaicMaker(object):
             self.m.get_all_img().update({key: cur})
 
     # 图库目录 目标文件 输出路径 子图尺寸 最小像素单位 拼图模式 默认尺寸
-    def __init__(self, db_path, aim_path, out_path, sub_width=64, sub_height=64, min_unit=5, mode="RGB", default_w=1080,
-                 default_h=1080):
+    def __init__(self, db_path, aim_path, out_path, sub_width=64, sub_height=64, min_unit=5, mode="RGB", default_w=1600,
+                 default_h=1600):
         self.__db_path = db_path
         self.__aim_path = aim_path
         self.__out_path = out_path
@@ -55,17 +55,20 @@ class MosaicMaker(object):
         self.__default_h = default_h
         self.__all_img = dict()
 
+        #保持比例
+        aim_im = Image.open(self.__aim_path)
+        self.__default_h = int(aim_im.size[1] / aim_im.size[0] * default_w)
 
     # 对外提供的接口
     def make(self, is_big_size=False):
         aim_im = Image.open(self.__aim_path)
         if is_big_size:
             if aim_im.size[0] < aim_im.size[1]:
-                big_width = 1080
-                big_heigth = int(1080 / aim_im.size[0] * aim_im.size[1])
+                big_width = 1920
+                big_heigth = int(aim_im.size[1] / aim_im.size[0] * big_width)
             else:
-                big_heigth = 1080
-                big_width = int(aim_im.size[0] / 1080 * aim_im.size[1])
+                big_heigth =  1920
+                big_width = int(aim_im.size[0] / aim_im.size[1] * big_heigth)
             aim_im = aim_im.resize((big_width, big_heigth), Image.ANTIALIAS)
         aim_width = aim_im.size[0]
         aim_height = aim_im.size[1]
@@ -135,14 +138,17 @@ class MosaicMaker(object):
             height = self.__default_h
             g = 320
 
-        elif g == width and g >= 320:
-            # 6.4倍数效果最好
-            g = int(g / (2048 / 320))
-            # g = 320
+        #兼容大图片
+        elif g == width and g >= 1920:
+            # 6倍数效果最好
+            g = int(g / (1920 / 320))
 
         # 兼容小图片
         elif g < 320:
             g = int(g / 2)
+
+        else:
+            g = 320
 
         print("g", g)
 
@@ -309,7 +315,7 @@ class MosaicMaker(object):
 
 
 
-def run(aim_path, out_path, is_big_size):
+def run(aim_path, out_path, is_big_size=False):
     db_path = os.getcwd() + "\\wechat\\"
     m = MosaicMaker(db_path, aim_path,
                     out_path)
