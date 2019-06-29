@@ -60,8 +60,12 @@ class MosaicMaker(object):
     def make(self, is_big_size=False):
         aim_im = Image.open(self.__aim_path)
         if is_big_size:
-            big_width = 4096
-            big_heigth = int(4096 / aim_im.size[0] * aim_im.size[1])
+            if aim_im.size[0] < aim_im.size[1]:
+                big_width = 1080
+                big_heigth = int(1080 / aim_im.size[0] * aim_im.size[1])
+            else:
+                big_heigth = 1080
+                big_width = int(aim_im.size[0] / 1080 * aim_im.size[1])
             aim_im = aim_im.resize((big_width, big_heigth), Image.ANTIALIAS)
         aim_width = aim_im.size[0]
         aim_height = aim_im.size[1]
